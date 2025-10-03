@@ -73,7 +73,7 @@ function HomeAfterUnlock() {
             {/* Oval curved text */}
             <div className="relative w-full h-full group">
               {/* Text Group - All letters with precise positioning */}
-              <div className="group-hover:scale-110 transition-transform duration-300" style={{width: '109%', height: '25%', position: 'relative', left: '105px', top: '30px', transform: 'scale(1.0)'}}>
+              <div className="group-hover:scale-110 transition-transform duration-300" style={{width: '100%', height: '25%', position: 'relative', left: '-1px', top: '70px', transform: 'scale(1)'}}>
                 <div style={{width: 13.99, height: 18.69, left: 0, top: 106.38, position: 'absolute', transform: 'rotate(-66deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>N</div>
                 <div style={{width: 11.16, height: 18.60, left: 7.97, top: 89.41, position: 'absolute', transform: 'rotate(-60deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>h</div>
                 <div style={{width: 14.99, height: 18.40, left: 16.06, top: 75.83, position: 'absolute', transform: 'rotate(-54deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>ữ</div>
@@ -108,42 +108,45 @@ function HomeAfterUnlock() {
 
            {/* Main Image with Play Button */}
           <div className="relative mb-6">
-            <img 
-              src={mainImage}
-              alt="Birthday celebration"
-              className="w-full h-auto object-cover"
-              style={{ transform: 'scale(1) translateY(-80px)' }}
-            />
-            {/* Play Button Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <button className="relative w-12 h-12 md:w-20 md:h-20s hover:scale-110 transition-transform" style={{ transform: 'translateY(-130px) scale(1.5)' }}>
-                {/* Background Ellipse */}
-                <img 
-                  src={ellipseIcon} 
-                  alt="Play button background" 
-                  className="absolute inset-0 w-full h-full" 
-                />
-                {/* Play Triangle */}
-                <img 
-                  src={polygonIcon} 
-                  alt="Play" 
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 object-contain" 
-                />
-              </button>
+            {/* Container for image and play button */}
+            <div className="relative w-full max-w-sm mx-auto">
+              <img 
+                src={mainImage}
+                alt="Birthday celebration"
+                className="w-full h-auto object-cover"
+                style={{ transform: 'scale(1) translateY(-150px)' }}
+              />
+              {/* Play Button Overlay - Always centered */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <button className="relative w-12 h-20 md:w-20 md:h-20 hover:scale-110 transition-transform" style={{ transform: 'translateY(-150px)' }}>
+                  {/* Background Ellipse */}
+                  <img 
+                    src={ellipseIcon} 
+                    alt="Play button background" 
+                    className="absolute inset-0 w-full h-full" 
+                  />
+                  {/* Play Triangle */}
+                  <img 
+                    src={polygonIcon} 
+                    alt="Play" 
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 object-contain" 
+                  />
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Thumbnail Gallery - Horizontal Layout */}
-          <div className="flex justify-center items-center gap-6 mb-10 px-8">
+          <div className="flex justify-center items-center gap-6 mb-10 px-8" style={{ transform: 'translateY(-110px)' }}>
             {/* Left Thumbnail */}
             <div 
               className="relative cursor-pointer hover:scale-110 transition-all duration-300"
-              style={{ transform: 'rotate(-20deg) translateX(-36px)', transformOrigin: 'center' }}
+              style={{ transform: 'rotate(-20deg) translateX(-10px)', transformOrigin: 'center' }}
             >
               <img 
                 src={thumb1} 
                 alt="Thumbnail 1" 
-                className="w-20 h-20 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
+                className="w-20 h-15 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
               />
             </div>
 
@@ -155,19 +158,19 @@ function HomeAfterUnlock() {
               <img 
                 src={thumb2} 
                 alt="Thumbnail 2" 
-                className="w-20 h-20 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
+                className="w-20 h-19 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
               />
             </div>
 
             {/* Right Thumbnail */}
             <div 
               className="relative cursor-pointer hover:scale-110 transition-all duration-300"
-              style={{ transform: 'rotate(20deg) translateX(33px)', transformOrigin: 'center' }}
+              style={{ transform: 'rotate(20deg) translateX(10px)', transformOrigin: 'center' }}
             >
               <img 
                 src={thumb3} 
                 alt="Thumbnail 3" 
-                className="w-20 h-20 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
+                className="w-20 h-15 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
               />
             </div>
           </div>
@@ -176,7 +179,7 @@ function HomeAfterUnlock() {
           <button
             onClick={handleCtaClick}
             className="relative hover:scale-110 transition-transform"
-            style={{ transform: 'translateY(-20px)' }}
+            style={{ transform: 'translateY(-140px)' }}
           >
             {/* Button Frame */}
             <img 
