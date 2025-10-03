@@ -73,7 +73,7 @@ function HomeAfterUnlock() {
             {/* Oval curved text */}
             <div className="relative w-full h-full group">
               {/* Text Group - All letters with precise positioning */}
-              <div className="group-hover:scale-110 transition-transform duration-300 absolute left-1/2" style={{width: '100%', height: '100%', top: '30px', transform: 'translateX(-50%) scale(1.5)'}}>
+              <div className="group-hover:scale-110 transition-transform duration-300" style={{width: '109%', height: '25%', position: 'relative', left: '105px', top: '30px', transform: 'scale(1.0)'}}>
                 <div style={{width: 13.99, height: 18.69, left: 0, top: 106.38, position: 'absolute', transform: 'rotate(-66deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>N</div>
                 <div style={{width: 11.16, height: 18.60, left: 7.97, top: 89.41, position: 'absolute', transform: 'rotate(-60deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>h</div>
                 <div style={{width: 14.99, height: 18.40, left: 16.06, top: 75.83, position: 'absolute', transform: 'rotate(-54deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>ữ</div>
@@ -112,7 +112,7 @@ function HomeAfterUnlock() {
               src={mainImage}
               alt="Birthday celebration"
               className="w-full h-auto object-cover"
-              style={{ transform: 'scale(1.5) translateY(-80px)' }}
+              style={{ transform: 'scale(1) translateY(-80px)' }}
             />
             {/* Play Button Overlay */}
             <div className="absolute inset-0 flex items-center justify-center">

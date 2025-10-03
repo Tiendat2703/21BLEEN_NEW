@@ -25,9 +25,9 @@ function ImageUploadSection() {
 
     // Process each file
     files.forEach((file) => {
-      // Check file size (1MB = 1048576 bytes)
-      if (file.size > 1048576) {
-        setError(`Ảnh ${file.name} quá lớn (> 1MB)`);
+      // Check file size (5MB = 5242880 bytes)
+      if (file.size > 5242880) {
+        setError(`Ảnh ${file.name} quá lớn (> 5MB)`);
         return;
       }
 
@@ -82,7 +82,7 @@ function ImageUploadSection() {
         <div className="border-3 border-dashed border-primary-teal rounded-2xl p-8 flex flex-col items-center justify-center hover:bg-white transition-colors">
           <img src={uploadIcon} alt="Upload" className="w-16 h-16 mb-4" />
           <p className="text-primary-teal font-body text-sm text-center">
-            Chỉ chọn ảnh có kích thước nhỏ hơn 1MB, tối đa 8 ảnh
+            Chỉ chọn ảnh có kích thước nhỏ hơn 5MB, tối đa 8 ảnh
           </p>
         </div>
       </label>
