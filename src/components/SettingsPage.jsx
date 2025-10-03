@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import MenuSidebar from './MenuSidebar';
-<<<<<<< HEAD
 import NavigationArrows from './NavigationArrows';
-=======
->>>>>>> dd495fbf863887f53482fb6681e0d55631fa7983
 import PasswordSection from './settings/PasswordSection';
 import InfoSection from './settings/InfoSection';
 import ImageUploadSection from './settings/ImageUploadSection';
@@ -62,12 +59,9 @@ function SettingsPage() {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
 
       {/* Navigation Arrows */}
       <NavigationArrows />
-=======
->>>>>>> dd495fbf863887f53482fb6681e0d55631fa7983
     </div>
   );
 }
