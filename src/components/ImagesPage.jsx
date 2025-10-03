@@ -85,7 +85,7 @@ function ImagesPage() {
             </div>
 
             {/* Fixed Polaroid Container */}
-            <div className="h-[810px] pb-8 px-6" style={{ paddingTop: '70px' }}>
+            <div className="h-[810px] pb-8 px-6" style={{ paddingTop: '80px' }}>
               {images.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <p className="text-primary-teal font-heading text-xl mb-6">

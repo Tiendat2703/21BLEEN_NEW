@@ -67,14 +67,16 @@ function HomeAfterUnlock() {
 
         {/* Main Content */}
         <div className="container mx-auto px-6 flex flex-col items-center">
-        {/* Title with sparkles */}
-        <div className="relative w-full max-w-md mt-8 mb-12" style={{ transform: 'translateY(-120px)' }}>
-          <div className="relative w-full h-32 flex items-center justify-center">
-            {/* Oval curved text */}
-            <div className="relative w-full h-full group">
-              {/* Text Group - All letters with precise positioning */}
-              <div className="group-hover:scale-110 transition-transform duration-300" style={{width: '100%', height: '25%', position: 'relative', left: '-1px', top: '70px', transform: 'scale(1)'}}>
-                <div style={{width: 13.99, height: 18.69, left: 0, top: 106.38, position: 'absolute', transform: 'rotate(-66deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>N</div>
+        {/* Container for Text Group and Main Image */}
+        <div className="relative w-full max-w-md mx-auto bg-white/5 rounded-3xl overflow-hidden p-4 sm:p-6">
+          {/* Title with sparkles */}
+          <div className="relative w-full mt-8 mb-12" style={{ transform: 'translateY(-120px)' }}>
+            <div className="relative w-full h-32 flex items-center justify-center">
+              {/* Oval curved text */}
+              <div className="relative w-full h-full group">
+                {/* Text Group - All letters with precise positioning */}
+                <div className="group-hover:scale-110 transition-transform duration-300" style={{width: '100%', height: '25%', position: 'relative', left: '-1px', top: '80px', transform: 'scale(1)'}}>
+                  <div style={{width: 13.99, height: 18.69, left: 0, top: 106.38, position: 'absolute', transform: 'rotate(-66deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>N</div>
                 <div style={{width: 11.16, height: 18.60, left: 7.97, top: 89.41, position: 'absolute', transform: 'rotate(-60deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>h</div>
                 <div style={{width: 14.99, height: 18.40, left: 16.06, top: 75.83, position: 'absolute', transform: 'rotate(-54deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>ữ</div>
                 <div style={{width: 12.28, height: 17.46, left: 27.81, top: 60.88, position: 'absolute', transform: 'rotate(-48deg)', transformOrigin: 'top left', color: '#17B3C1', fontSize: 24, fontFamily: 'Coiny', fontWeight: '400', wordWrap: 'break-word'}}>n</div>
@@ -114,11 +116,11 @@ function HomeAfterUnlock() {
                 src={mainImage}
                 alt="Birthday celebration"
                 className="w-full h-auto object-cover"
-                style={{ transform: 'scale(1) translateY(-150px)' }}
+                style={{ transform: 'scale(0.8) translateY(-250px)' }}
               />
               {/* Play Button Overlay - Always centered */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <button className="relative w-12 h-20 md:w-20 md:h-20 hover:scale-110 transition-transform" style={{ transform: 'translateY(-150px)' }}>
+                <button className="relative w-12 h-20 md:w-20 md:h-20 hover:scale-110 transition-transform" style={{ transform: 'translateY(-200px)' }}>
                   {/* Background Ellipse */}
                   <img 
                     src={ellipseIcon} 
@@ -136,8 +138,9 @@ function HomeAfterUnlock() {
             </div>
           </div>
 
+          </div>
           {/* Thumbnail Gallery - Horizontal Layout */}
-          <div className="flex justify-center items-center gap-6 mb-10 px-8" style={{ transform: 'translateY(-110px)' }}>
+          <div className="flex justify-center items-center gap-6 mb-10 px-8" style={{ transform: 'translateY(-220px)' }}>
             {/* Left Thumbnail */}
             <div 
               className="relative cursor-pointer hover:scale-110 transition-all duration-300"
@@ -179,7 +182,7 @@ function HomeAfterUnlock() {
           <button
             onClick={handleCtaClick}
             className="relative hover:scale-110 transition-transform"
-            style={{ transform: 'translateY(-140px)' }}
+            style={{ transform: 'translateY(-240px)' }}
           >
             {/* Button Frame */}
             <img 
