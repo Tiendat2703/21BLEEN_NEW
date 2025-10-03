@@ -4,6 +4,7 @@ import { getImages } from '../utils/localStorage';
 import hoaTiet from '../images/Images Page/Untitled_img/Hoạ tiết.png';
 import logoImage from '../images/Video Page/source_2.png';
 import polaroidFrame from '../images/Images Page/Polaroid frame.png';
+import image14 from '../images/Images Page/Untitled_img/image 14.png';
 
 function ImagesPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,8 +25,9 @@ function ImagesPage() {
     setSelectedImage(null);
   };
 
+
   return (
-    <div className="min-h-screen overflow-hidden" style={{ backgroundColor: '#F4FFF8' }}>
+    <div className="relative min-h-screen overflow-hidden" style={{ backgroundColor: '#F4FFF8' }}>
       <MenuSidebar isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
       {/* Header with Logo and Menu Button */}
@@ -55,11 +57,12 @@ function ImagesPage() {
         </button>
       </div>
 
-      {/* Main Container */}
-      <div className="px-4 pb-12 flex items-center justify-center min-h-screen">
-        <div className="relative w-full max-w-[420px]">
-          {/* Large Circle Background */}
-          <div style={{width: '100%', height: '100%', background: '#D9FFE8', borderTopLeftRadius: 196.50, borderTopRightRadius: 196.50}} >
+      {/* Main content container */}
+      <div className="relative z-10 px-4 pb-8">
+        <div className="max-w-sm mx-auto">
+
+          {/* Main rounded container */}
+          <div className="relative bg-light-mint rounded-t-[196px] w-full h-[850px] mt-8" style={{ transform: 'translateY(-72px)' }}>
             
             {/* Star/Sparkle Icon at Top */}
             <div className="absolute top-12 left-1/2 transform -translate-x-1/2">
@@ -70,8 +73,18 @@ function ImagesPage() {
               />
             </div>
 
-            {/* Scrollable Photo Container */}
-            <div className="h-full overflow-y-auto pt-24 pb-8 px-6 scrollbar-hide">
+            {/* Image 14 in the empty space */}
+            <div className="absolute top-32 left-1/2 transform -translate-x-1/2" style={{ transform: 'translateX(-50%) scale(1.5)' }}>
+              <img 
+                src={image14} 
+                alt="Decorative Image" 
+                className="w-auto h-auto object-contain"
+                style={{ maxWidth: '300px', maxHeight: '150px' }}
+              />
+            </div>
+
+            {/* Fixed Polaroid Container */}
+            <div className="h-[810px] pb-8 px-6" style={{ paddingTop: '70px' }}>
               {images.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <p className="text-primary-teal font-heading text-xl mb-6">
@@ -85,32 +98,35 @@ function ImagesPage() {
                   </button>
                 </div>
               ) : (
-                <div className="space-y-8">
-                  {images.map((image, index) => (
+                <div className="space-y-[-160px] flex flex-col items-center">
+                  {images.slice(0, 2).map((image, index) => (
                     <div
                       key={index}
                       className="relative cursor-pointer hover:scale-105 transition-all duration-300"
                       onClick={() => handleImageClick(image)}
                     >
-                      {/* Polaroid Frame Background */}
-                      <img 
-                        src={polaroidFrame} 
-                        alt="Polaroid Frame" 
-                        className="w-full h-auto object-contain"
-                      />
-                      
-                      {/* Photo Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center p-4">
-                        <div className="w-full h-full flex items-center justify-center">
-                          <img
-                            src={image.data}
-                            alt={`Photo ${index + 1}`}
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
-                            style={{ 
-                              maxHeight: 'calc(100% - 2rem)',
-                              maxWidth: 'calc(100% - 2rem)'
-                            }}
-                          />
+                      {/* Polaroid Container - nhóm cả frame và photo */}
+                      <div className="relative w-full" style={{ transform: 'scale(0.67)' }}>
+                        {/* Polaroid Frame Background */}
+                        <img 
+                          src={polaroidFrame} 
+                          alt="Polaroid Frame" 
+                          className="w-full h-auto object-contain"
+                        />
+                        
+                        {/* Photo Overlay - chỉ che phần màu xanh bên trong */}
+                        <div className="absolute inset-0 flex items-center justify-center" style={{ padding: '8% 6% 20% 6%' }}>
+                          <div className="w-full h-full flex items-center justify-center">
+                            <img
+                              src={image.data}
+                              alt={`Photo ${index + 1}`}
+                              className="w-full h-full object-cover rounded-lg shadow-lg"
+                              style={{ 
+                                objectFit: 'cover',
+                                borderRadius: '8px'
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -125,10 +141,11 @@ function ImagesPage() {
       {/* Lightbox Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: '#D9FFE8' }}
           onClick={closeLightbox}
         >
-          <div className="relative max-w-4xl w-full">
+          <div className="relative max-w-md w-full">
             <img
               src={selectedImage.data}
               alt="Full size"
@@ -139,7 +156,6 @@ function ImagesPage() {
               className="absolute -top-12 right-0 text-white text-5xl font-light hover:text-gray-300 transition-colors w-12 h-12 flex items-center justify-center"
               onClick={closeLightbox}
             >
-              ×
             </button>
           </div>
         </div>
