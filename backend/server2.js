@@ -905,7 +905,255 @@ app.delete('/api/images/:imageId', authenticateUser, async (req, res) => {
     });
   }
 });
+// =============================================================================
+// VIDEO ENDPOINTS
+// =============================================================================
+app.post('/api/upload/video', uploadLimiter, authenticateUser, async (req, res) => {
+  const videoUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 100 * 1024 * 1024, // 100MB max
+    },
+    fileFilter: (req, file, cb) => {
+      console.log('Received file:', file.originalname);
+      console.log('MIME type:', file.mimetype);
+      console.log('Field name:', file.fieldname);
+      
+      const allowedMimes = [
+        'video/mp4',
+        'video/mpeg',
+        'video/quicktime',
+        'video/x-msvideo',
+        'video/webm',
+        'application/octet-stream'
+      ];
+      
+      if (allowedMimes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error(`Chỉ chấp nhận file video! Nhận: ${file.mimetype}`), false);
+      }
+    }
+  }).single('video'); // THÊM dòng này - thiếu dấu đóng và .single()
 
+  videoUpload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'Không có file video được upload'
+        });
+      }
+
+      // Validate userId
+      if (!req.body.userId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Thiếu userId'
+        });
+      }
+
+      const userId = validateUserId(req.body.userId);
+
+      // Kiểm tra ownership
+      if (req.user.role !== 'admin' && req.user.userId !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: 'Không có quyền upload video cho user này'
+        });
+      }
+
+      // Kiểm tra xem user đã có video chưa
+      const { data: existingVideo } = await supabase
+        .from('user_videos')
+        .select('id, file_path')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      // Nếu đã có video, xóa video cũ
+      if (existingVideo) {
+        await supabase.storage
+          .from('user-videos')
+          .remove([existingVideo.file_path]);
+
+        await supabase
+          .from('user_videos')
+          .delete()
+          .eq('id', existingVideo.id);
+      }
+
+      const fileName = generateFileName(req.file.originalname);
+      const filePath = `users/${userId}/videos/${fileName}`;
+
+      // Upload video
+      const { error: uploadError } = await supabase.storage
+        .from('user-videos')
+        .upload(filePath, req.file.buffer, {
+          contentType: req.file.mimetype,
+          cacheControl: '3600'
+        });
+
+      if (uploadError) {
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('user-videos')
+        .getPublicUrl(filePath);
+
+      const metadata = {
+        user_id: userId,
+        file_name: sanitizeInput(req.file.originalname, 255),
+        file_path: filePath,
+        file_url: urlData.publicUrl,
+        file_size: req.file.size,
+        file_type: req.file.mimetype,
+        duration: req.body.duration ? parseFloat(req.body.duration) : null
+      };
+
+      const { data: dbData, error: dbError } = await supabase
+        .from('user_videos')
+        .insert([metadata])
+        .select()
+        .single();
+
+      if (dbError) {
+        console.error('Database save failed:', dbError);
+        throw new Error('Lưu metadata thất bại');
+      }
+
+      await logAudit(userId, 'video_uploaded', req, { videoId: dbData.id });
+
+      res.json({
+        success: true,
+        message: 'Upload video thành công',
+        data: {
+          id: dbData.id,
+          userId: userId,
+          url: urlData.publicUrl,
+          path: filePath,
+          size: req.file.size,
+          type: req.file.mimetype,
+          duration: metadata.duration,
+          originalName: req.file.originalname
+        }
+      });
+
+    } catch (error) {
+      console.error('Video upload error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message,
+        error: error.message
+      });
+    }
+  });
+});
+// Lấy video của user
+app.get('/api/video/:userId', authenticateUser, checkOwnership, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const validUserId = validateUserId(userId);
+
+    const { data, error } = await supabase
+      .from('user_videos')
+      .select('*')
+      .eq('user_id', validUserId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      data: data || null,
+      userId: validUserId
+    });
+
+  } catch (error) {
+    console.error('Get video error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Không thể lấy video',
+      error: error.message
+    });
+  }
+});
+
+// Xóa video
+app.delete('/api/video/:userId', authenticateUser, checkOwnership, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const validUserId = validateUserId(userId);
+
+    // Lấy thông tin video
+    const { data: video, error: fetchError } = await supabase
+      .from('user_videos')
+      .select('*')
+      .eq('user_id', validUserId)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: 'Video không tồn tại'
+      });
+    }
+
+    // Kiểm tra quyền sở hữu (đã có middleware nhưng double-check)
+    if (video.user_id !== req.user.userId && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Không có quyền xóa video này'
+      });
+    }
+
+    // Xóa file từ storage
+    const { error: storageError } = await supabase.storage
+      .from('user-videos') // hoặc 'user-videos'
+      .remove([video.file_path]);
+
+    if (storageError) {
+      console.warn('Storage delete warning:', storageError);
+    }
+
+    // Xóa record từ database
+    const { error: dbError } = await supabase
+      .from('user_videos')
+      .delete()
+      .eq('user_id', validUserId);
+
+    if (dbError) throw dbError;
+
+    await logAudit(validUserId, 'video_deleted', req, { videoId: video.id });
+
+    res.json({
+      success: true,
+      message: 'Đã xóa video thành công',
+      deletedVideo: {
+        id: video.id,
+        userId: video.user_id,
+        fileName: video.file_name
+      }
+    });
+
+  } catch (error) {
+    console.error('Delete video error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Xóa video thất bại',
+      error: error.message
+    });
+  }
+});
 // =============================================================================
 // POST ENDPOINTS
 // =============================================================================
