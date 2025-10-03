@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuSidebar from './MenuSidebar';
+<<<<<<< HEAD
 import NavigationArrows from './NavigationArrows';
+=======
+>>>>>>> dd495fbf863887f53482fb6681e0d55631fa7983
 import hoaTiet from '../images/Home Page (After Unlock)/Untitled_img/Hoạ tiết.png';
 import mainImage from '../images/Home Page (After Unlock)/Untitled_img/Rectangle 6.png';
 import thumb1 from '../images/Home Page (After Unlock)/Untitled_img/Rectangle 7.png';
@@ -194,9 +197,12 @@ function HomeAfterUnlock() {
           </button>
         </div>
       </div>
+<<<<<<< HEAD
 
       {/* Navigation Arrows */}
       <NavigationArrows />
+=======
+>>>>>>> dd495fbf863887f53482fb6681e0d55631fa7983
     </div>
   );
 }

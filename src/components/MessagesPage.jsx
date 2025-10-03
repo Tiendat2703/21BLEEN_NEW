@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import MenuSidebar from './MenuSidebar';
+<<<<<<< HEAD
 import NavigationArrows from './NavigationArrows';
+=======
+>>>>>>> dd495fbf863887f53482fb6681e0d55631fa7983
 import { getAudio, getPerson } from '../utils/localStorage';
 import hoaTiet from '../images/Messages Page/Untitled_img/Hoạ tiết.png';
 import vectorIcon from '../images/Messages Page/Untitled_icon/Vector.svg';
@@ -210,9 +213,12 @@ function MessagesPage() {
           className="hidden"
         />
       )}
+<<<<<<< HEAD
 
       {/* Navigation Arrows */}
       <NavigationArrows />
+=======
+>>>>>>> dd495fbf863887f53482fb6681e0d55631fa7983
     </div>
   );
 }
