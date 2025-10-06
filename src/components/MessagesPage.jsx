@@ -76,6 +76,20 @@ function MessagesPage() {
           }
         }
       }
+
+      // Load voice from voice API
+      const voiceResponse = await fetch(`/api/voice/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (voiceResponse.ok) {
+        const voiceData = await voiceResponse.json();
+        if (voiceData.success && voiceData.data) {
+          setAudioData(voiceData.data.file_url);
+        }
+      }
     } catch (err) {
       console.error('Error loading data:', err);
     } finally {
@@ -178,10 +192,35 @@ function MessagesPage() {
         <img alt="" className="block max-w-none size-full" src={ellipseIcon} />
       </button>
       
-      {/* Stop Icon */}
-      <div className="absolute right-1/2 translate-x-1/2 size-[24px] top-[680px]" data-name="lets-icons:stop-fill" data-node-id="0:1226">
-        <img alt="" className="block max-w-none size-full" src={stopIcon} />
-      </div>
+      {/* Play/Pause Icon - Clickable */}
+      <button 
+        onClick={handlePlayPause}
+        disabled={!audioData}
+        className="absolute right-1/2 translate-x-1/2 size-[24px] top-[680px] cursor-pointer hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed" 
+        data-name="lets-icons:stop-fill" 
+        data-node-id="0:1226"
+      >
+        {isPlaying ? (
+          // Pause icon (2 bars)
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 5H7C6.44772 5 6 5.44772 6 6V18C6 18.5523 6.44772 19 7 19H9C9.55228 19 10 18.5523 10 18V6C10 5.44772 9.55228 5 9 5Z" fill="#17B3C1"/>
+            <path d="M17 5H15C14.4477 5 14 5.44772 14 6V18C14 18.5523 14.4477 19 15 19H17C17.5523 19 18 18.5523 18 18V6C18 5.44772 17.5523 5 17 5Z" fill="#17B3C1"/>
+          </svg>
+        ) : (
+          // Play icon (triangle)
+          <img alt="Play" className="block max-w-none size-full" src={stopIcon} />
+        )}
+      </button>
+      
+      {/* Hidden Audio Element */}
+      {audioData && (
+        <audio 
+          ref={audioRef} 
+          src={audioData}
+          onEnded={handleAudioEnded}
+          className="hidden"
+        />
+      )}
       
       {/* Person 1 Avatar - Left of Stop Icon */}
       <div className="absolute right-1/2 translate-x-[150px] rounded-[14px] size-[85px] top-[657px]" data-node-id="0:1229">
@@ -206,50 +245,4 @@ function MessagesPage() {
               <div className="absolute bg-[#58d0b5] inset-0 rounded-[14px]" />
               <img 
                 alt={person2?.name || "Person 2"} 
-                className="absolute max-w-none object-cover rounded-[14px] size-full" 
-                src={person2?.image || defaultAvatar2}
-                onError={(e) => {
-                  e.target.src = defaultAvatar2;
-                }}
-              />  
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Decorative Pattern */}
-      <div className="absolute size-[76px] top-[155px] translate-x-[-50%] left-1/2" data-name="Hoạ tiết" data-node-id="0:1232">
-        <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover opacity-20 pointer-events-none size-full" src={hoaTiet} />
-      </div>
-      
-      {/* Decorative Video Animation */}
-      <div className="absolute h-[79px] left-1/2 top-[511px] translate-x-[-50%] w-[393px]" data-name="1" data-node-id="0:1233">
-        <video 
-          className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
-          autoPlay 
-          loop 
-          muted 
-          playsInline
-        >
-          <source src={recordingVideo} type="video/mp4" />
-        </video>
-      </div>
-      {/* Hidden Audio Element */}
-      {audioData && (
-        <audio
-          ref={audioRef}
-          src={audioData}
-          onEnded={handleAudioEnded}
-          className="hidden"
-        />
-      )}
-
-      {/* Navigation Arrows */}
-      <NavigationArrows />
-    </div>
-  );
-}
-
-export default MessagesPage;
-
-
+                className="absolute max-w

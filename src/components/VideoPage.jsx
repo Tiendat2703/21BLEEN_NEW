@@ -49,6 +49,14 @@ function VideoPage() {
         } else {
           setVideo(null);
         }
+      } else if (response.status === 403 || response.status === 401) {
+        // Token hết hạn
+        console.error('Token hết hạn hoặc không có quyền truy cập');
+        toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        setTimeout(() => {
+          localStorage.clear();
+          window.location.href = `/${userId}/unlock`;
+        }, 2000);
       } else {
         console.error('Failed to load video:', response.statusText);
         setVideo(null);
@@ -162,26 +170,4 @@ function VideoPage() {
                   </p>
                   <button
                     onClick={() => window.location.href = `/${userId}/settings`}
-                    className="bg-primary-teal text-white font-body px-6 py-2 rounded-full hover:bg-accent-green transition-colors"
-                  >
-                    Tải video lên
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Arrows */}
-      <NavigationArrows />
-    </div>
-  );
-}
-
-export default VideoPage;
-
-
-
-
-
+                    class

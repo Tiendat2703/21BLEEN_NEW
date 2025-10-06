@@ -3,9 +3,9 @@
   "ext": "js",
   "ignore": ["node_modules/**/*", "src/**/*", "public/**/*"],
   "exec": "node server2.js",
-  "delay": 500,
+  "delay": 100,
   "env": {
     "NODE_ENV": "development"
   },
-  "verbose": false
-}
+  "verbose": false,
+ 

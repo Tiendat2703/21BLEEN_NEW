@@ -19,18 +19,18 @@ export default defineConfig({
     // Disable HMR if not needed
     hmr: {
       overlay: false
+    },
+    // Ignore certain files to prevent unnecessary restarts
+    watch: {
+      ignored: [
+        '**/node_modules/**',
+        '**/package-lock.json',
+        '**/.git/**',
+        '**/dist/**'
+      ]
     }
   },
   build: {
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    // Better source maps
-    sourcemap: true,
-    // Disable minification for debugging
-    minify: false
-  },
-  // Add base URL if needed
-  base: '/',
-  // Improve asset handling
-  assetsInclude: ['**/*.svg']
-})
+    

@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 import MenuSidebar from './MenuSidebar';
 import NavigationArrows from './NavigationArrows';
 import hoaTiet from '../images/Home Page (After Unlock)/Untitled_img/Hoạ tiết.png';
@@ -14,15 +16,103 @@ import logoImage from '../images/Video Page/source_2.png';
 
 
 export default function HomeAfterUnlock() {
+  const { userId } = useParams();
+  const { token } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [videoData, setVideoData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [videoError, setVideoError] = useState('');
+  const [thumbnailImages, setThumbnailImages] = useState({
+    position1: null,
+    position5: null,
+    position3: null
+  });
   const navigate = useNavigate();
+
+  // Load data from backend
+  useEffect(() => {
+    loadVideoFromBackend();
+    loadThumbnailImages();
+  }, [userId, token]);
+
+  const loadVideoFromBackend = async () => {
+    if (!userId || !token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setVideoError('');
+      
+      const response = await fetch(`/api/video/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setVideoData(data.data);
+        } else {
+          setVideoData(null);
+        }
+      } else if (response.status === 403 || response.status === 401) {
+        console.error('Token hết hạn hoặc không có quyền truy cập');
+        toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        setTimeout(() => {
+          localStorage.clear();
+          window.location.href = `/${userId}/unlock`;
+        }, 2000);
+      } else {
+        setVideoError('Không thể tải video');
+      }
+    } catch (err) {
+      console.error('Error loading video:', err);
+      setVideoError('Lỗi khi tải video: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadThumbnailImages = async () => {
+    if (!userId || !token) return;
+
+    try {
+      const response = await fetch(`/api/images/${userId}?sortBy=position`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          // Tìm ảnh theo position 1, 5, 3
+          const images = data.data;
+          const position1 = images.find(img => img.position === 1);
+          const position5 = images.find(img => img.position === 5);
+          const position3 = images.find(img => img.position === 3);
+
+          setThumbnailImages({
+            position1: position1?.file_url || null,
+            position5: position5?.file_url || null,
+            position3: position3?.file_url || null
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Error loading thumbnail images:', err);
+    }
+  };
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleCtaClick = () => {
-    navigate('/messages');
+    navigate(`/${userId}/messages`);
   };
 
   return (
@@ -106,97 +196,16 @@ export default function HomeAfterUnlock() {
           </div>
         </div>
 
-           {/* Main Image with Play Button */}
+           {/* Main Video Display - Fixed Oval Frame */}
           <div className="relative mb-6">
-            <img 
-              src={mainImage}
-              alt="Birthday celebration"
-              className="w-full h-auto object-cover"
-              style={{ transform: 'scale(1.5) translateY(-80px)' }}
-            />
-            {/* Play Button Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <button className="relative w-12 h-12 md:w-20 md:h-20s hover:scale-110 transition-transform" style={{ transform: 'translateY(-130px) scale(1.5)' }}>
-                {/* Background Ellipse */}
-                <img 
-                  src={ellipseIcon} 
-                  alt="Play button background" 
-                  className="absolute inset-0 w-full h-full" 
-                />
-                {/* Play Triangle */}
-                <img 
-                  src={polygonIcon} 
-                  alt="Play" 
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 object-contain" 
-                />
-              </button>
-            </div>
-          </div>
-
-          {/* Thumbnail Gallery - Horizontal Layout */}
-          <div className="flex justify-center items-center gap-6 mb-10 px-8">
-            {/* Left Thumbnail */}
-            <div 
-              className="relative cursor-pointer hover:scale-110 transition-all duration-300"
-              style={{ transform: 'rotate(-20deg) translateX(-36px)', transformOrigin: 'center' }}
-            >
-              <img 
-                src={thumb1} 
-                alt="Thumbnail 1" 
-                className="w-20 h-20 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
-              />
-            </div>
-
-            {/* Center Thumbnail */}
-            <div 
-              className="relative cursor-pointer hover:scale-110 transition-all duration-300"
-              style={{ transform: 'translateY(-30px) translateX(1px)', transformOrigin: 'center' }}
-            >
-              <img 
-                src={thumb2} 
-                alt="Thumbnail 2" 
-                className="w-20 h-20 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
-              />
-            </div>
-
-            {/* Right Thumbnail */}
-            <div 
-              className="relative cursor-pointer hover:scale-110 transition-all duration-300"
-              style={{ transform: 'rotate(20deg) translateX(33px)', transformOrigin: 'center' }}
-            >
-              <img 
-                src={thumb3} 
-                alt="Thumbnail 3" 
-                className="w-20 h-20 md:w-24 md:h-24 object-cover shadow-lg rounded-lg"
-              />
-            </div>
-          </div>
-
-          {/* CTA Button */}
-          <button
-            onClick={handleCtaClick}
-            className="relative hover:scale-110 transition-transform"
-            style={{ transform: 'translateY(-20px)' }}
-          >
-            {/* Button Frame */}
-            <img 
-              src={buttonFrame} 
-              alt="Button frame" 
-              className="w-auto h-auto object-contain" 
-              style={{ width: '300px', height: '100px' }}
-            />
-            {/* Button Text */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white font-heading text-lg md:text-xl">
-                Cùng xem nhé!
-              </span>
-            </div>
-          </button>
-        </div>
-      </div>
-      {/* Navigation Arrows */}
-      <NavigationArrows />
-
-    </div>
-  );
-}
+            {isLoading ? (
+              // Loading state
+              <div className="flex items-center justify-center w-full h-64 bg-gray-100 rounded-lg" style={{ transform: 'scale(1.5) translateY(-80px)' }}>
+                <div className="flex flex-col items-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-teal mb-4"></div>
+                  <p className="text-primary-teal font-body text-lg">Đang tải video...</p>
+                </div>
+              </div>
+            ) : videoData ? (
+              // Video display - Fixed in oval frame only
+              <div className="relative w-full max-w-sm mx-auto overflow-hidden rounded-lg" style={{ transform: 'translateY(-80px)' }}>

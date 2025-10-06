@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
+import EmailLoginPage from './components/EmailLoginPage';
 import HomePage from './components/HomePage';
 import UnlockPage from './components/UnlockPage';
 import HomeAfterUnlock from './components/HomeAfterUnlock';
@@ -19,8 +20,8 @@ const NavigateWithUserId = () => {
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Redirect root to a default user ID for demo purposes */}
-      <Route path="/" element={<Navigate to="/userid" replace />} />
+      {/* Email login page - root route */}
+      <Route path="/" element={<EmailLoginPage />} />
       
       {/* Unlock page - public route */}
       <Route path="/:userId/unlock" element={
@@ -90,4 +91,3 @@ function App() {
   );
 }
 
-export default App;

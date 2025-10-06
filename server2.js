@@ -84,6 +84,13 @@ const generalLimiter = rateLimit({
   message: { success: false, message: 'Quá nhiều requests. Vui lòng thử lại sau.' }
 });
 
+const getDataLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 phút
+  max: 1000, // 1000 requests/15 phút
+  keyGenerator: (req) => req.user?.userId || req.ip, // Rate limit theo userId thay vì IP
+  message: { success: false, message: 'Quá nhiều requests lấy dữ liệu.' }
+});
+
 app.use(generalLimiter);
 
 // Authentication Middleware
@@ -244,7 +251,7 @@ function generateAccessToken(user) {
   return jwt.sign(
     { userId: user.user_id, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: '2h' }
+    { expiresIn: '7d' } // 7 ngày thay vì 2 giờ
   );
 }
 
@@ -372,6 +379,62 @@ app.get('/api/users/all', authenticateUser, async (req, res) => {
       });
     }
   });
+
+// Verify email and get user info
+app.post('/api/auth/verify-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Vui lòng nhập email'
+      });
+    }
+
+    // Validate email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email không hợp lệ'
+      });
+    }
+
+    // Tìm user trong database
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('user_id, email, full_name')
+      .eq('email', email.toLowerCase().trim())
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Email không tồn tại trong hệ thống'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Email hợp lệ',
+      data: {
+        userId: user.user_id,
+        email: user.email,
+        fullName: user.full_name
+      }
+    });
+
+  } catch (error) {
+    console.error('Verify email error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi xác thực email',
+      error: error.message
+    });
+  }
+});
 
 app.post('/api/auth/verify-passcode', authLimiter, async (req, res) => {
   try {
@@ -1071,7 +1134,7 @@ app.post('/api/upload/video', uploadLimiter, authenticateUser, async (req, res) 
   });
 });
 // Lấy video của user
-app.get('/api/video/:userId', authenticateUser, checkOwnership, async (req, res) => {
+app.get('/api/video/:userId', getDataLimiter, authenticateUser, checkOwnership, async (req, res) => {
   try {
     const { userId } = req.params;
     const validUserId = validateUserId(userId);
@@ -1168,6 +1231,268 @@ app.delete('/api/video/:userId', authenticateUser, checkOwnership, async (req, r
     });
   }
 });
+
+// =============================================================================
+// VOICE ENDPOINTS
+// =============================================================================
+
+// Upload voice
+app.post('/api/upload/voice', uploadLimiter, authenticateUser, async (req, res) => {
+  const voiceUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max
+    },
+    fileFilter: (req, file, cb) => {
+      console.log('Received voice file:', file.originalname);
+      console.log('MIME type:', file.mimetype);
+      
+      const allowedMimes = [
+        'audio/mpeg',
+        'audio/mp3',
+        'audio/wav',
+        'audio/ogg',
+        'audio/webm',
+        'audio/aac',
+        'audio/m4a',
+        'audio/x-m4a',
+        'application/octet-stream'
+      ];
+      
+      // Kiểm tra extension
+      const ext = file.originalname.toLowerCase().split('.').pop();
+      const allowedExts = ['mp3', 'wav', 'ogg', 'webm', 'aac', 'm4a', 'mpeg'];
+      
+      if (allowedMimes.includes(file.mimetype) && allowedExts.includes(ext)) {
+        console.log('✅ Voice file accepted');
+        cb(null, true);
+      } else {
+        console.log('❌ Voice file rejected');
+        cb(new Error(`File không hợp lệ. MIME: ${file.mimetype}, Ext: ${ext}`), false);
+      }
+    }
+  }).single('voice');
+
+  voiceUpload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'Không có file voice được upload'
+        });
+      }
+
+      // Validate userId
+      if (!req.body.userId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Thiếu userId'
+        });
+      }
+
+      const userId = validateUserId(req.body.userId);
+
+      // Kiểm tra ownership
+      if (req.user.role !== 'admin' && req.user.userId !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: 'Không có quyền upload voice cho user này'
+        });
+      }
+
+      // Kiểm tra xem user đã có voice chưa
+      const { data: existingVoice } = await supabase
+        .from('user_voices')
+        .select('id, file_path')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      // Nếu đã có voice, xóa voice cũ
+      if (existingVoice) {
+        await supabase.storage
+          .from('user-voices')
+          .remove([existingVoice.file_path]);
+
+        await supabase
+          .from('user_voices')
+          .delete()
+          .eq('id', existingVoice.id);
+      }
+
+      const fileName = generateFileName(req.file.originalname);
+      const filePath = `users/${userId}/voices/${fileName}`;
+
+      // Upload voice
+      const { error: uploadError } = await supabase.storage
+        .from('user-voices')
+        .upload(filePath, req.file.buffer, {
+          contentType: req.file.mimetype,
+          cacheControl: '3600'
+        });
+
+      if (uploadError) {
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('user-voices')
+        .getPublicUrl(filePath);
+
+      const metadata = {
+        user_id: userId,
+        file_name: sanitizeInput(req.file.originalname, 255),
+        file_path: filePath,
+        file_url: urlData.publicUrl,
+        file_size: req.file.size,
+        file_type: req.file.mimetype,
+        duration: req.body.duration ? parseFloat(req.body.duration) : null
+      };
+
+      const { data: dbData, error: dbError } = await supabase
+        .from('user_voices')
+        .insert([metadata])
+        .select()
+        .single();
+
+      if (dbError) {
+        console.error('Database save failed:', dbError);
+        throw new Error('Lưu metadata thất bại');
+      }
+
+      await logAudit(userId, 'voice_uploaded', req, { voiceId: dbData.id });
+
+      res.json({
+        success: true,
+        message: 'Upload voice thành công',
+        data: {
+          id: dbData.id,
+          userId: userId,
+          url: urlData.publicUrl,
+          path: filePath,
+          size: req.file.size,
+          type: req.file.mimetype,
+          duration: metadata.duration,
+          originalName: req.file.originalname
+        }
+      });
+
+    } catch (error) {
+      console.error('Voice upload error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message,
+        error: error.message
+      });
+    }
+  });
+});
+
+// Lấy voice của user
+app.get('/api/voice/:userId', authenticateUser, checkOwnership, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const validUserId = validateUserId(userId);
+
+    const { data, error } = await supabase
+      .from('user_voices')
+      .select('*')
+      .eq('user_id', validUserId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      data: data || null,
+      userId: validUserId
+    });
+
+  } catch (error) {
+    console.error('Get voice error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Không thể lấy voice',
+      error: error.message
+    });
+  }
+});
+
+// Xóa voice
+app.delete('/api/voice/:userId', authenticateUser, checkOwnership, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const validUserId = validateUserId(userId);
+
+    // Lấy thông tin voice
+    const { data: voice, error: fetchError } = await supabase
+      .from('user_voices')
+      .select('*')
+      .eq('user_id', validUserId)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+
+    if (!voice) {
+      return res.status(404).json({
+        success: false,
+        message: 'Voice không tồn tại'
+      });
+    }
+
+    // Kiểm tra quyền sở hữu
+    if (voice.user_id !== req.user.userId && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Không có quyền xóa voice này'
+      });
+    }
+
+    // Xóa file từ storage
+    const { error: storageError } = await supabase.storage
+      .from('user-voices')
+      .remove([voice.file_path]);
+
+    if (storageError) {
+      console.warn('Storage delete warning:', storageError);
+    }
+
+    // Xóa record từ database
+    const { error: dbError } = await supabase
+      .from('user_voices')
+      .delete()
+      .eq('user_id', validUserId);
+
+    if (dbError) throw dbError;
+
+    await logAudit(validUserId, 'voice_deleted', req, { voiceId: voice.id });
+
+    res.json({
+      success: true,
+      message: 'Đã xóa voice thành công',
+      deletedVoice: {
+        id: voice.id,
+        userId: voice.user_id,
+        fileName: voice.file_name
+      }
+    });
+
+  } catch (error) {
+    console.error('Delete voice error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Xóa voice thất bại',
+      error: error.message
+    });
+  }
+});
+
 // =============================================================================
 // POST ENDPOINTS
 // =============================================================================
@@ -1754,257 +2079,4 @@ app.post('/api/auth/change-passcode', authLimiter, authenticateUser, async (req,
         })
         .eq('user_id', validUserId);
   
-      if (updateError) {
-        throw updateError;
-      }
-  
-      // Log audit
-      await logAudit(validUserId, 'passcode_changed', req);
-  
-      res.json({
-        success: true,
-        message: 'Đổi passcode thành công'
-      });
-  
-    } catch (error) {
-      console.error('Change passcode error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Lỗi khi đổi passcode',
-        error: error.message
-      });
-    }
-  });
-  
-  // Admin reset passcode (cho user quên passcode)
-  app.post('/api/auth/reset-passcode', authLimiter, authenticateAdmin, async (req, res) => {
-    try {
-      const { userId, newPasscode } = req.body;
-  
-      // Validate input
-      if (!userId || !newPasscode) {
-        return res.status(400).json({
-          success: false,
-          message: 'Vui lòng cung cấp userId và newPasscode'
-        });
-      }
-  
-      // Validate userId
-      const validUserId = validateUserId(userId);
-  
-      // Validate new passcode
-      const trimmedNewPasscode = validator.trim(newPasscode);
-      if (trimmedNewPasscode.length < 4 || trimmedNewPasscode.length > 6) {
-        return res.status(400).json({
-          success: false,
-          message: 'Passcode mới phải có từ 4 đến 6 ký tự'
-        });
-      }
-  
-      // Kiểm tra user có tồn tại không
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .select('user_id')
-        .eq('user_id', validUserId)
-        .single();
-  
-      if (userError || !user) {
-        return res.status(404).json({
-          success: false,
-          message: 'User không tồn tại'
-        });
-      }
-  
-      // Hash new passcode
-      const newPasscodeHash = await bcrypt.hash(trimmedNewPasscode, 10);
-  
-      // Update passcode
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ 
-          passcode_hash: newPasscodeHash,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', validUserId);
-  
-      if (updateError) {
-        throw updateError;
-      }
-  
-      // Log audit
-      await logAudit(validUserId, 'passcode_reset_by_admin', req, {
-        admin_user: req.user.username
-      });
-  
-      res.json({
-        success: true,
-        message: 'Reset passcode thành công',
-        data: {
-          userId: validUserId,
-          newPasscode: trimmedNewPasscode // Trả về để admin gửi cho user
-        }
-      });
-  
-    } catch (error) {
-      console.error('Reset passcode error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Lỗi khi reset passcode',
-        error: error.message
-      });
-    }
-  });
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    supabase: SUPABASE_URL.replace(/https?:\/\//, ''),
-    features: {
-      position_support: true,
-      independent_tables: true,
-      user_id_formats: ['number (123)', 'user_number (user_123)'],
-      security: {
-        rate_limiting: true,
-        jwt_auth: true,
-        input_validation: true,
-        xss_protection: true,
-        ownership_check: true
-      }
-    },
-    endpoints: {
-      admin: [
-        'POST /api/admin/login/simple - Admin login'
-      ],
-      auth: [
-        'POST /api/auth/register - Đăng ký tài khoản (requires admin token)',
-        'POST /api/auth/verify-passcode - Xác thực passcode'
-      ],
-      images: [
-        'POST /api/upload - Upload 1 ảnh (với position)',
-        'POST /api/upload/multiple - Upload nhiều ảnh (với positions)',
-        'GET /api/images/:userId - Lấy tất cả ảnh',
-        'GET /api/image/:imageId - Lấy 1 ảnh',
-        'DELETE /api/images/:imageId - Xóa ảnh'
-      ],
-      posts: [
-        'GET /api/posts/:userId - Lấy post',
-        'POST /api/posts/:userId - Tạo/update post',
-        'DELETE /api/posts/:userId - Xóa post'
-      ],
-      utils: [
-        'GET /api/stats/:userId - Thống kê user',
-        'GET /health - Health check'
-      ]
-    }
-  });
-});
-
-// Error handling
-app.use((error, req, res, next) => {
-  if (error instanceof multer.MulterError) {
-    if (error.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({
-        success: false,
-        message: 'File quá lớn (>5MB)'
-      });
-    }
-    if (error.code === 'LIMIT_FILE_COUNT') {
-      return res.status(400).json({
-        success: false,
-        message: 'Quá nhiều file (>10)'
-      });
-    }
-  }
-  
-  res.status(500).json({
-    success: false,
-    message: 'Lỗi server',
-    error: error.message
-  });
-});
-
-// Sử dụng indexApp cho các route không phải API
-app.use((req, res, next) => {
-  if (!req.path.startsWith('/api/')) {
-    return indexApp(req, res, next);
-  }
-  next();
-});
-
-// Start server
-const startServer = (port) => {
-  const server = app.listen(port, '0.0.0.0', () => {
-    console.log(`\n🚀 ===== SERVER STARTED =====`);
-    console.log(`📡 Port: ${port}`);
-    console.log(`🌐 Access: http://localhost:${port}`);
-    console.log(`🗄️  Supabase: ${SUPABASE_URL.replace(/https?:\/\//, '')}`);
-    console.log(`\n✨ FEATURES:`);
-    console.log(`   ✓ Position support for frame mapping`);
-    console.log(`   ✓ Independent tables (no foreign keys)`);
-    console.log(`   ✓ User ID formats: 123 or user_123_456`);
-    console.log(`   ✓ JWT Authentication with passcode`);
-    console.log(`   ✓ Rate limiting protection`);
-    console.log(`   ✓ Input validation & sanitization`);
-    console.log(`   ✓ XSS protection`);
-    console.log(`   ✓ Ownership verification`);
-    console.log(`   ✓ Audit logging`);
-    
-    console.log(`\n🔐 ADMIN APIs:`);
-    console.log(`   POST   /api/admin/login/simple  # Admin login`);
-    
-    console.log(`\n🔑 AUTH APIs:`);
-    console.log(`   POST   /api/auth/register       # Đăng ký (requires admin token)`);
-    console.log(`   POST   /api/auth/verify-passcode # Xác thực passcode`);
-    
-    console.log(`\n📋 IMAGE APIs (requires user token):`);
-    console.log(`   POST   /api/upload              # Upload 1 ảnh + position`);
-    console.log(`   POST   /api/upload/multiple     # Upload nhiều ảnh + positions[]`);
-    console.log(`   GET    /api/images/:userId      # Tất cả ảnh (sorted by position)`);
-    console.log(`   GET    /api/image/:imageId      # 1 ảnh theo ID`);
-    console.log(`   DELETE /api/images/:imageId     # Xóa ảnh`);
-    
-    console.log(`\n📄 POST APIs (requires user token):`);
-    console.log(`   GET    /api/posts/:userId       # Lấy post`);
-    console.log(`   POST   /api/posts/:userId       # Tạo/update post`);
-    console.log(`   DELETE /api/posts/:userId       # Xóa post`);
-    
-    console.log(`\n🔧 UTILS:`);
-    console.log(`   GET    /api/stats/:userId       # Thống kê (requires user token)`);
-    console.log(`   GET    /health                  # Health check`);
-    
-    console.log(`\n💡 Example Usage:`);
-    console.log(`   # 1. Admin login`);
-    console.log(`   curl -X POST -H "Content-Type: application/json" \\`);
-    console.log(`     -d '{"username":"admin","password":"your_password"}' \\`);
-    console.log(`     http://localhost:${port}/api/admin/login/simple`);
-    
-    console.log(`\n   # 2. Register user (with admin token)`);
-    console.log(`   curl -X POST -H "Content-Type: application/json" \\`);
-    console.log(`     -H "Authorization: Bearer ADMIN_TOKEN" \\`);
-    console.log(`     -d '{"email":"user@example.com","full_name":"User","passcode":"1234"}' \\`);
-    console.log(`     http://localhost:${port}/api/auth/register`);
-    
-    console.log(`\n   # 3. Verify passcode (get user token)`);
-    console.log(`   curl -X POST -H "Content-Type: application/json" \\`);
-    console.log(`     -d '{"userId":"user_123456789_123","passcode":"1234"}' \\`);
-    console.log(`     http://localhost:${port}/api/auth/verify-passcode`);
-    
-    console.log(`\n   # 4. Upload image (with user token)`);
-    console.log(`   curl -X POST -H "Authorization: Bearer USER_TOKEN" \\`);
-    console.log(`     -F "image=@photo.jpg" -F "userId=user_123456789_123" -F "position=1" \\`);
-    console.log(`     http://localhost:${port}/api/upload`);
-    
-    console.log(`\n=============================\n`);
-  });
-
-  server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.log(`❌ Port ${port} đang được sử dụng, thử port ${port + 1}...`);
-      startServer(port + 1);
-    } else {
-      console.error('❌ Server error:', err);
-    }
-  });
-};
-
-startServer(PORT);
+      i
