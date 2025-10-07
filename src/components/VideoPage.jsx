@@ -85,6 +85,23 @@ function VideoPage() {
     setShowPlayButton(false);
   };
 
+  const handleVideoDoubleClick = () => {
+    if (videoRef.current) {
+      // Exit fullscreen if currently in fullscreen
+      if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    }
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden" style={{ backgroundColor: '#F4FFF8' }}>
       <style jsx global>{`
@@ -137,8 +154,8 @@ function VideoPage() {
       <div className="relative z-10 px-4 pb-8">
         <div className="max-w-sm mx-auto">
 
-          {/* Main rounded container */}
-          <div className="relative bg-light-mint rounded-t-[196px] w-full h-[732px] mt-8">
+          {/* Main rounded container with green frame like MessagesPage */}
+          <div className="relative bg-[#d9ffe8] rounded-t-[196.5px] w-full h-[732px] mt-8">
             {/* Video player container */}
             <div className="absolute top-[62px] left-1/2 transform -translate-x-1/2 w-[320px] h-[608px] rounded-t-[160px] overflow-hidden">
               {isLoading ? (
@@ -156,6 +173,7 @@ function VideoPage() {
                     controls
                     onPlay={handleVideoPlay}
                     onPause={handleVideoPause}
+                    onDoubleClick={handleVideoDoubleClick}
                     className="w-full h-full object-cover"
                     playsInline
                     webkit-playsinline="true"

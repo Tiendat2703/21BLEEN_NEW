@@ -29,14 +29,14 @@ export default function MenuSidebar({ isOpen, onClose }) {
         <div className="absolute bg-[#f4fff8] h-full left-0 top-0 w-full" data-name="Nền menu" data-node-id="0:1271" />
         
         {/* Logo */}
-        <div className="absolute size-[120px] sm:size-[140px] md:size-[163px] top-[32px] sm:top-[40px] md:top-[48px] translate-x-[-50%] left-1/2" data-name="Logo chính" data-node-id="0:1282">
+        <div className="absolute size-[120px] sm:size-[140px] md:size-[163px] top-[40px] sm:top-[48px] md:top-[56px] translate-x-[-50%] left-1/2" data-name="Logo chính" data-node-id="0:1282">
           <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={logoChinh} />
         </div>
 
         {/* Menu Items */}
-        <div className="relative pt-[200px] sm:pt-[220px] md:pt-[240px] px-4 sm:px-6 md:px-8">
+        <div className="relative pt-[220px] sm:pt-[240px] md:pt-[260px] px-4 sm:px-6 md:px-8">
           {/* TRANG CHỦ */}
-          <div className="mb-6 sm:mb-8 md:mb-10">
+          <div className="mb-4 sm:mb-6 md:mb-8">
             <button 
               onClick={() => handleNavigation('home')}
               className="w-full flex flex-col h-[24px] sm:h-[26px] md:h-[28px] justify-center hover:opacity-70 transition-opacity cursor-pointer" 
@@ -60,7 +60,7 @@ export default function MenuSidebar({ isOpen, onClose }) {
           </div>
 
           {/* HÌNH ẢNH */}
-          <div className="mb-6 sm:mb-8 md:mb-10">
+          <div className="mb-4 sm:mb-6 md:mb-8">
             <button 
               onClick={() => handleNavigation('images')}
               className="w-full flex flex-col h-[24px] sm:h-[26px] md:h-[28px] justify-center hover:opacity-70 transition-opacity cursor-pointer" 
@@ -84,7 +84,7 @@ export default function MenuSidebar({ isOpen, onClose }) {
           </div>
 
           {/* VIDEO */}
-          <div className="mb-6 sm:mb-8 md:mb-10">
+          <div className="mb-4 sm:mb-6 md:mb-8">
             <button 
               onClick={() => handleNavigation('video')}
               className="w-full flex flex-col h-[24px] sm:h-[26px] md:h-[28px] justify-center hover:opacity-70 transition-opacity cursor-pointer" 
@@ -108,7 +108,7 @@ export default function MenuSidebar({ isOpen, onClose }) {
           </div>
 
           {/* THÔNG ĐIỆP */}
-          <div className="mb-6 sm:mb-8 md:mb-10">
+          <div className="mb-4 sm:mb-6 md:mb-8">
             <button 
               onClick={() => handleNavigation('messages')}
               className="w-full flex flex-col h-[24px] sm:h-[26px] md:h-[28px] justify-center hover:opacity-70 transition-opacity cursor-pointer" 
@@ -132,7 +132,7 @@ export default function MenuSidebar({ isOpen, onClose }) {
           </div>
 
           {/* CÀI ĐẶT */}
-          <div className="mb-6 sm:mb-8 md:mb-10">
+          <div className="mb-4 sm:mb-6 md:mb-8">
             <button 
               onClick={() => handleNavigation('settings')}
               className="w-full flex flex-col h-[24px] sm:h-[26px] md:h-[28px] justify-center hover:opacity-70 transition-opacity cursor-pointer" 
