@@ -122,11 +122,7 @@ const ImagesPage = () => {
     }
   };
 
-  // Handle frame click
-  const handleFrameClick = (frameKey) => {
-    localStorage.setItem('selectedFrame', frameKey);
-    window.location.href = `/${userId}/settings`;
-  };
+  // Frame click functionality removed - frames are now display-only
 
   return (
     <div className="min-h-screen overflow-hidden" style={{ backgroundColor: '#F4FFF8' }}>
@@ -179,7 +175,6 @@ const ImagesPage = () => {
                   src={images.frame1} 
                   alt="Frame 1"
                   frameKey="frame1"
-                  onFrameClick={handleFrameClick}
                   width={157}
                   height={157}
                 />
@@ -187,7 +182,6 @@ const ImagesPage = () => {
                   src={images.frame2} 
                   alt="Frame 2"
                   frameKey="frame2"
-                  onFrameClick={handleFrameClick}
                   width={157}
                   height={157}
                 />
@@ -198,7 +192,6 @@ const ImagesPage = () => {
                   src={images.frame3} 
                   alt="Frame 3"
                   frameKey="frame3"
-                  onFrameClick={handleFrameClick}
                   width={211}
                   height={157}
                 />
@@ -206,7 +199,6 @@ const ImagesPage = () => {
                   src={images.frame4} 
                   alt="Frame 4"
                   frameKey="frame4"
-                  onFrameClick={handleFrameClick}
                   width={104}
                   height={157}
                 />
@@ -217,7 +209,6 @@ const ImagesPage = () => {
                   src={images.frame5} 
                   alt="Frame 5"
                   frameKey="frame5"
-                  onFrameClick={handleFrameClick}
                   width={101}
                   height={157}
                 />
@@ -225,7 +216,6 @@ const ImagesPage = () => {
                   src={images.frame6} 
                   alt="Frame 6"
                   frameKey="frame6"
-                  onFrameClick={handleFrameClick}
                   width={101}
                   height={157}
                 />
@@ -233,7 +223,6 @@ const ImagesPage = () => {
                   src={images.frame7} 
                   alt="Frame 7"
                   frameKey="frame7"
-                  onFrameClick={handleFrameClick}
                   width={101}
                   height={157}
                 />
@@ -249,38 +238,26 @@ const ImagesPage = () => {
   );
 };
 
-const ImageCard = ({ src, alt, frameKey, onFrameClick, width, height }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
+const ImageCard = ({ src, alt, frameKey, width, height }) => {
   return (
     <div 
-      className="relative overflow-hidden shadow-md group cursor-pointer"
+      className="relative overflow-hidden shadow-md group"
       style={{ 
         width: `${width}px`, 
         height: `${height}px`,
         borderRadius: '10px',
         background: '#D9D9D9'
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onFrameClick(frameKey)}
     >
       {src ? (
-        <>
-          <img 
-            src={src} 
-            alt={alt}
-            className="w-full h-full object-cover"
-            style={{ borderRadius: '10px' }}
-          />
-          {isHovered && (
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center transition-all">
-              <Upload className="text-white" size={24} />
-            </div>
-          )}
-        </>
+        <img 
+          src={src} 
+          alt={alt}
+          className="w-full h-full object-cover"
+          style={{ borderRadius: '10px' }}
+        />
       ) : (
-        <div className="w-full h-full flex items-center justify-center hover:bg-gray-300 transition-colors">
+        <div className="w-full h-full flex items-center justify-center">
           <Upload className="text-gray-500" size={32} />
         </div>
       )}

@@ -316,15 +316,13 @@ export default function HomeAfterUnlock() {
 }
 
 function ThumbnailGallery({ userId, thumbnailImages }) {
-  const navigate = useNavigate();
 
   return (
     <div className="flex justify-center items-center gap-6 mb-10 px-8" style={{ transform: 'translateY(-140px)' }}>
       {/* Left Thumbnail - Position 1 */}
       <div 
-        className="relative cursor-pointer hover:scale-110 transition-all duration-300"
+        className="relative"
         style={{ transform: 'rotate(-20deg) translateX(-10px)', transformOrigin: 'center' }}
-        onClick={() => navigate(`/${userId}/images`)}
       >
         {thumbnailImages.position1 ? (
           <img 
@@ -341,9 +339,8 @@ function ThumbnailGallery({ userId, thumbnailImages }) {
 
       {/* Center Thumbnail - Position 5 */}
       <div 
-        className="relative cursor-pointer hover:scale-110 transition-all duration-300"
+        className="relative"
         style={{ transform: 'translateY(-30px) translateX(1px)', transformOrigin: 'center' }}
-        onClick={() => navigate(`/${userId}/images`)}
       >
         {thumbnailImages.position5 ? (
           <img 
@@ -360,9 +357,8 @@ function ThumbnailGallery({ userId, thumbnailImages }) {
 
       {/* Right Thumbnail - Position 3 */}
       <div 
-        className="relative cursor-pointer hover:scale-110 transition-all duration-300"
+        className="relative"
         style={{ transform: 'rotate(20deg) translateX(10px)', transformOrigin: 'center' }}
-        onClick={() => navigate(`/${userId}/images`)}
       >
         {thumbnailImages.position3 ? (
           <img 
