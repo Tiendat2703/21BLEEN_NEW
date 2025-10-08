@@ -71,7 +71,7 @@ function NavigationArrows() {
       {previousPage && (
         <div
           onClick={handleLeftClick}
-          className="fixed left-0 top-0 bottom-0 w-1/7 z-10 cursor-pointer hover:bg-black hover:bg-opacity-5 transition-all"
+          className="fixed left-0 top-0 bottom-0 w-1/12 z-10 cursor-pointer hover:bg-black hover:bg-opacity-5 transition-all"
           aria-label="Previous page"
         />
       )}
@@ -80,7 +80,7 @@ function NavigationArrows() {
       {nextPage && (
         <div
           onClick={handleRightClick}
-          className="fixed right-0 top-0 bottom-0 w-1/7 z-10 cursor-pointer hover:bg-black hover:bg-opacity-5 transition-all"
+          className="fixed right-0 top-0 bottom-0 w-1/12 z-10 cursor-pointer hover:bg-black hover:bg-opacity-5 transition-all"
           aria-label="Next page"
         />
       )}
