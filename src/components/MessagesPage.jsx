@@ -5,7 +5,6 @@ import { apiCall } from '../utils/api';
 import MenuSidebar from './MenuSidebar';
 import NavigationArrows from './NavigationArrows';
 import hoaTiet from '../images/Images Page/Untitled_img/Hoạ tiết.png';
-import vectorIcon from '../images/Messages Page/Untitled_icon/Vector.svg';
 import defaultAvatar1 from '../images/Messages Page/Untitled_img/1.png';
 import defaultAvatar2 from '../images/Messages Page/Untitled_img/2.png';
 import logoImage from '../images/Video Page/source_2.png';
@@ -157,10 +156,6 @@ function MessagesPage() {
           </svg>
         </button>
       </div>      
-      {/* Vector Element */}
-      <div className="absolute inset-[6.69%_9.41%_91.55%_85.5%]" data-name="Vector" data-node-id="0:1222">
-        <img alt="" className="block max-w-none size-full" src={vectorIcon} />
-      </div>
       
       {/* Main Container */}
       <div className="absolute bg-[#d9ffe8] h-[732px] right-1/2 translate-x-1/2 rounded-tl-[196.5px] rounded-tr-[196.5px] top-[90px] w-[400px]" data-node-id="0:1223" />
@@ -225,6 +220,7 @@ function MessagesPage() {
       {/* Person 1 Avatar - Left of Stop Icon */}
       <div className="absolute right-1/2 translate-x-[150px] rounded-[14px] size-[85px] top-[637px]" data-node-id="0:1229">
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none rounded-[14px]">
+          <div className="absolute bg-[#58d0b5] inset-0 rounded-[14px]" />
           <img 
             alt={person1?.name || "Person 1"} 
             className="absolute max-w-none object-cover rounded-[14px] size-full" 
@@ -241,6 +237,7 @@ function MessagesPage() {
         <div className="flex-none rotate-[180deg] scale-y-[-100%]">
           <div className="relative rounded-[14px] size-[85px]" data-node-id="0:1230">
             <div aria-hidden="true" className="absolute inset-0 pointer-events-none rounded-[14px]">
+              <div className="absolute bg-[#58d0b5] inset-0 rounded-[14px]" />
               <img 
                 alt={person2?.name || "Person 2"} 
                 className="absolute max-w-none object-cover rounded-[14px] size-full" 
