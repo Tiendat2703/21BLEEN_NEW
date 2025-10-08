@@ -258,7 +258,7 @@ function MessagesPage() {
       
       {/* Decorative Pattern */}
       <div className="absolute size-[76px] top-[155px] translate-x-[-50%] left-1/2" data-name="Hoạ tiết" data-node-id="0:1232">
-        <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover opacity-70 pointer-events-none size-full" src={hoaTiet} />
+        <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover opacity-20 pointer-events-none size-full" src={hoaTiet} />
       </div>
       
       {/* Decorative Video Animation */}
