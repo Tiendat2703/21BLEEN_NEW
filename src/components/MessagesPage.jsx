@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { apiCall } from '../utils/api';
 import MenuSidebar from './MenuSidebar';
 import NavigationArrows from './NavigationArrows';
-import hoaTiet from '../images/Messages Page/Untitled_img/Hoạ tiết.png';
+import hoaTiet from '../images/Images Page/Untitled_img/Hoạ tiết.png';
 import vectorIcon from '../images/Messages Page/Untitled_icon/Vector.svg';
 import defaultAvatar1 from '../images/Messages Page/Untitled_img/1.png';
 import defaultAvatar2 from '../images/Messages Page/Untitled_img/2.png';
