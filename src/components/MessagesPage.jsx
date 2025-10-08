@@ -225,7 +225,6 @@ function MessagesPage() {
       {/* Person 1 Avatar - Left of Stop Icon */}
       <div className="absolute right-1/2 translate-x-[150px] rounded-[14px] size-[85px] top-[637px]" data-node-id="0:1229">
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none rounded-[14px]">
-          <div className="absolute bg-[#58d0b5] inset-0 rounded-[14px]" />
           <img 
             alt={person1?.name || "Person 1"} 
             className="absolute max-w-none object-cover rounded-[14px] size-full" 
@@ -242,7 +241,6 @@ function MessagesPage() {
         <div className="flex-none rotate-[180deg] scale-y-[-100%]">
           <div className="relative rounded-[14px] size-[85px]" data-node-id="0:1230">
             <div aria-hidden="true" className="absolute inset-0 pointer-events-none rounded-[14px]">
-              <div className="absolute bg-[#58d0b5] inset-0 rounded-[14px]" />
               <img 
                 alt={person2?.name || "Person 2"} 
                 className="absolute max-w-none object-cover rounded-[14px] size-full" 
