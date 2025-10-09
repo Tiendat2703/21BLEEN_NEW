@@ -166,20 +166,28 @@ function MessagesPage() {
       {/* Main Container */}
       <div className="absolute bg-[#d9ffe8] h-[732px] right-1/2 translate-x-1/2 rounded-tl-[196.5px] rounded-tr-[196.5px] top-[90px] w-[400px]" data-node-id="0:1223" />
       
-      {/* Message Text */}
-      <div className="absolute flex flex-col font-body font-bold justify-center leading-[normal] right-1/2 translate-x-1/2 text-[#17b3c1] text-[14px] top-[371px] translate-y-[-50%] w-[280px]" data-node-id="0:1224">
-        {isLoading ? (
-          <p className="mb-0 text-center">Đang tải thông điệp...</p>
-        ) : message ? (
-          <p className="mb-0 whitespace-pre-wrap text-justify">{message}</p>
-        ) : (
-          <>
-            <p className="mb-0 text-justify">Gửi đến người nhận được chiếc thẻ này!</p>
-            <p className="mb-0 text-justify">Mình muốn bạn biết rằng bạn thật đặc biệt trong cuộc đời mình. Mỗi khi chạm vào thẻ, hãy nhớ rằng ở đâu đó có một người luôn trân trọng, luôn nghĩ về bạn, và mong bạn bình an, hạnh phúc.</p>
-            <p className="mb-0">&nbsp;</p>
-            <p className="text-justify">Dù cuộc sống có bận rộn đến đâu, hãy dành một chút thời gian yêu thương chính mình và tin rằng bạn chưa bao giờ một mình.</p>
-          </>
-        )}
+      {/* Message Frame Container */}
+      <div className="absolute right-1/2 translate-x-1/2 top-[371px] translate-y-[-50%] w-[307px] h-[253px]" data-node-id="0:1224">
+        {/* Frame Background */}
+        <div className="w-full h-full bg-white rounded-lg border-2 border-gray-200 shadow-lg overflow-hidden">
+          {/* Message Content */}
+          <div className="w-full h-full p-4 flex flex-col justify-center">
+            <div className="font-body font-bold leading-[normal] text-[#17b3c1] text-[14px] overflow-y-auto">
+              {isLoading ? (
+                <p className="mb-0 text-center">Đang tải thông điệp...</p>
+              ) : message ? (
+                <p className="mb-0 whitespace-pre-wrap text-justify">{message}</p>
+              ) : (
+                <>
+                  <p className="mb-0 text-justify">Gửi đến người nhận được chiếc thẻ này!</p>
+                  <p className="mb-0 text-justify">Mình muốn bạn biết rằng bạn thật đặc biệt trong cuộc đời mình. Mỗi khi chạm vào thẻ, hãy nhớ rằng ở đâu đó có một người luôn trân trọng, luôn nghĩ về bạn, và mong bạn bình an, hạnh phúc.</p>
+                  <p className="mb-0">&nbsp;</p>
+                  <p className="text-justify">Dù cuộc sống có bận rộn đến đâu, hãy dành một chút thời gian yêu thương chính mình và tin rằng bạn chưa bao giờ một mình.</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
       
       {/* Play Button with Ellipse Background */}
