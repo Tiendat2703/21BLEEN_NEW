@@ -176,7 +176,7 @@ function MessagesPage() {
               {isLoading ? (
                 <p className="mb-0 text-center">Đang tải thông điệp...</p>
               ) : message ? (
-                <p className="mb-0 bg-[#D9FFE8]-pre-wrap text-justify">{message}</p>
+                  <p className="mb-0 whitespace-pre-wrap text-justify">{message}</p>
               ) : (
                 <>
                   <p className="mb-0 text-justify">Gửi đến người nhận được chiếc thẻ này!</p>

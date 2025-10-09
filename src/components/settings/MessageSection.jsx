@@ -21,6 +21,7 @@ function MessageSection() {
     const wordCount = countWords(text);
     return wordCount <= 100;
   };
+  
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
@@ -32,6 +33,7 @@ function MessageSection() {
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const timerRef = useRef(null);
+  const audioContextRef = useRef(null);
 
   useEffect(() => {
     // Load existing data from backend
@@ -86,13 +88,52 @@ function MessageSection() {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
     };
   }, []);
 
+  // Hàm kiểm tra browser và định dạng audio hỗ trợ
+  const getAudioMimeType = () => {
+    const mimeTypes = [
+      'audio/mp4',
+      'audio/wav',
+      'audio/webm',
+      'audio/ogg'
+    ];
+
+    for (let mimeType of mimeTypes) {
+      if (MediaRecorder.isTypeSupported(mimeType)) {
+        return mimeType;
+      }
+    }
+
+    // Fallback - trả về loại mặc định
+    return 'audio/wav';
+  };
+
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      // Yêu cầu quyền truy cập microphone với các option phù hợp
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+
+      const mimeType = getAudioMimeType();
+      console.log('Using MIME type:', mimeType);
+
+      // Chỉ set mimeType nếu trình duyệt hỗ trợ (tránh lỗi trên Safari)
+      const options = MediaRecorder.isTypeSupported(mimeType) 
+        ? { mimeType: mimeType }
+        : {};
+      
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
+      
       chunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (e) => {
@@ -102,7 +143,9 @@ function MessageSection() {
       };
 
       mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        // Lấy MIME type thực tế từ mediaRecorder, không phải từ options
+        const actualMimeType = mediaRecorderRef.current.mimeType || 'audio/mp4';
+        const blob = new Blob(chunksRef.current, { type: actualMimeType });
         setAudioBlob(blob);
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
@@ -114,6 +157,7 @@ function MessageSection() {
       mediaRecorderRef.current.start();
       setIsRecording(true);
       setRecordingTime(0);
+      setError('');
 
       // Start timer (max 3 minutes = 180 seconds)
       timerRef.current = setInterval(() => {
@@ -126,8 +170,17 @@ function MessageSection() {
         });
       }, 1000);
     } catch (err) {
-      setError('Không thể truy cập microphone. Vui lòng cho phép quyền truy cập.');
-      console.error(err);
+      console.error('Recording error:', err);
+      
+      if (err.name === 'NotAllowedError') {
+        setError('Bạn đã từ chối quyền truy cập microphone. Vui lòng cho phép trong cài đặt.');
+      } else if (err.name === 'NotFoundError') {
+        setError('Không tìm thấy microphone. Vui lòng kiểm tra thiết bị.');
+      } else if (err.name === 'NotSupportedError') {
+        setError('Trình duyệt của bạn không hỗ trợ ghi âm. Vui lòng sử dụng Chrome, Firefox hoặc Safari mới hơn.');
+      } else {
+        setError('Không thể truy cập microphone. Vui lòng cho phép quyền truy cập.');
+      }
     }
   };
 
@@ -236,10 +289,25 @@ function MessageSection() {
         totalTasks++;
         const formData = new FormData();
         
-        // Convert webm to a file with proper extension
-        const audioFile = new File([audioBlob], `voice_${Date.now()}.webm`, { 
-          type: 'audio/webm' 
-        });
+        // Lấy MIME type thực tế từ blob
+        const mimeType = audioBlob.type || 'audio/mp4';
+        let extension = 'mp4';
+        
+        if (mimeType.includes('webm')) {
+          extension = 'webm';
+        } else if (mimeType.includes('ogg')) {
+          extension = 'ogg';
+        } else if (mimeType.includes('wav')) {
+          extension = 'wav';
+        } else if (mimeType.includes('mp4') || mimeType.includes('mpeg')) {
+          extension = 'mp4';
+        }
+        
+        const audioFile = new File(
+          [audioBlob],
+          `voice_${Date.now()}.${extension}`,
+          { type: mimeType }
+        );
         
         formData.append('voice', audioFile);
         formData.append('userId', userId);
