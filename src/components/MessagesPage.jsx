@@ -169,7 +169,7 @@ function MessagesPage() {
       {/* Message Frame Container */}
       <div className="absolute right-1/2 translate-x-1/2 top-[371px] translate-y-[-50%] w-[307px] h-[253px]" data-node-id="0:1224">
         {/* Frame Background */}
-        <div className="w-full h-full bg-[#D9FFE8] rounded-lg border-2 border-gray-200 shadow-lg overflow-hidden">
+        <div className="w-full h-full bg-[#D9FFE8] rounded-lg shadow-lg overflow-hidden">
           {/* Message Content */}
           <div className="w-full h-full p-4 flex flex-col justify-center">
             <div className="font-body font-bold leading-[normal] text-[#17b3c1] text-[14px] overflow-y-auto">
