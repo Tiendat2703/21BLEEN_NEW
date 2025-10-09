@@ -13,18 +13,16 @@ export default function MenuSidebar({ isOpen, onClose }) {
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+        className={`fixed inset-0 bg-black transition-opacity duration-300 z-40 ${isOpen ? 'bg-opacity-50' : 'bg-opacity-0 pointer-events-none'}`}
         onClick={onClose}
       />
 
       {/* Sidebar */}
-      <div className="fixed top-0 right-0 h-full w-[280px] sm:w-[300px] md:w-[320px] bg-[#f4fff8] z-50 shadow-2xl transform transition-transform duration-300 ease-in-out" data-name="Thanh menu" data-node-id="67:62">
+      <div className={`fixed top-0 right-0 h-full w-[280px] sm:w-[300px] md:w-[320px] bg-[#f4fff8] z-50 shadow-2xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`} data-name="Thanh menu" data-node-id="67:62">
         {/* Background */}
         <div className="absolute bg-[#f4fff8] h-full left-0 top-0 w-full" data-name="Nền menu" data-node-id="0:1271" />
         

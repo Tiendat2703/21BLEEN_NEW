@@ -298,22 +298,32 @@ function MessageSection() {
         Viết thông điệp từ trái tim của bạn (tối đa 100 từ)
       </p>
 
-      {/* Message Text Area */}
-      <textarea
-        value={message}
-        onChange={(e) => {
-          const newText = e.target.value;
-          if (validateWordLimit(newText)) {
-            setMessage(newText);
-          } else {
-            toast.warning('Thông điệp không được vượt quá 100 từ');
-          }
-        }}
-        placeholder="Viết thông điệp bạn muốn gửi đi nhé... (tối đa 100 từ)"
-        className={`w-full bg-white rounded-lg px-4 py-3 text-primary-teal font-body focus:outline-none focus:ring-2 focus:ring-primary-teal mb-2 min-h-[120px] resize-none ${
-          !validateWordLimit(message) ? 'ring-2 ring-red-500' : ''
-        }`}
-      />
+      {/* Message Text Area with Frame */}
+      <div className={`relative bg-white rounded-lg border-2 border-gray-200 mb-2 min-h-[120px] overflow-hidden ${
+        !validateWordLimit(message) ? 'border-red-500' : 'border-gray-200'
+      }`}>
+        <div className="absolute inset-0 p-1">
+          <div className="w-full h-full bg-gray-50 rounded-md border border-gray-100">
+            <textarea
+              value={message}
+              onChange={(e) => {
+                const newText = e.target.value;
+                if (validateWordLimit(newText)) {
+                  setMessage(newText);
+                } else {
+                  toast.warning('Thông điệp không được vượt quá 100 từ');
+                }
+              }}
+              placeholder="Viết thông điệp bạn muốn gửi đi nhé... (tối đa 100 từ)"
+              className="w-full h-full bg-transparent rounded-md px-4 py-3 text-primary-teal font-body focus:outline-none resize-none overflow-hidden"
+              style={{
+                boxShadow: 'none',
+                border: 'none'
+              }}
+            />
+          </div>
+        </div>
+      </div>
       <p className={`text-sm mb-4 text-right ${
         countWords(message) > 100 ? 'text-red-500' : 'text-primary-teal'
       }`}>

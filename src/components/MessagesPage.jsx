@@ -149,7 +149,8 @@ function MessagesPage() {
         {/* Menu Button */}
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="text-primary-teal hover:opacity-70 transition-opacity p-2"
+          className="text-primary-teal hover:opacity-70 transition-opacity p-2 z-30 relative"
+          aria-label="Toggle Menu"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -206,16 +207,6 @@ function MessagesPage() {
           </svg>
         )}
       </button>
-      
-      {/* Hidden Audio Element */}
-      {audioData && (
-        <audio 
-          ref={audioRef} 
-          src={audioData}
-          onEnded={handleAudioEnded}
-          className="hidden"
-        />
-      )}
       
       {/* Person 1 Avatar - Left of Stop Icon */}
       <div className="absolute right-1/2 translate-x-[150px] rounded-[14px] size-[85px] top-[637px]" data-node-id="0:1229">
