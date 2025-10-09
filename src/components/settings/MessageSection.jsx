@@ -19,7 +19,7 @@ function MessageSection() {
   // Function to validate word limit
   const validateWordLimit = (text) => {
     const wordCount = countWords(text);
-    return wordCount <= 500;
+    return wordCount <= 100;
   };
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
@@ -200,7 +200,7 @@ function MessageSection() {
 
     // Validate word limit for message
     if (message && message.trim().length > 0 && !validateWordLimit(message)) {
-      setError('Thông điệp không được vượt quá 500 từ');
+      setError('Thông điệp không được vượt quá 100 từ');
       return;
     }
 
@@ -295,7 +295,7 @@ function MessageSection() {
         Thông điệp được gửi gắm
       </h2>
       <p className="text-primary-teal text-sm mb-4 opacity-75">
-        Viết thông điệp từ trái tim của bạn (tối đa 500 từ)
+        Viết thông điệp từ trái tim của bạn (tối đa 100 từ)
       </p>
 
       {/* Message Text Area */}
@@ -306,18 +306,18 @@ function MessageSection() {
           if (validateWordLimit(newText)) {
             setMessage(newText);
           } else {
-            toast.warning('Thông điệp không được vượt quá 500 từ');
+            toast.warning('Thông điệp không được vượt quá 100 từ');
           }
         }}
-        placeholder="Viết thông điệp bạn muốn gửi đi nhé... (tối đa 500 từ)"
+        placeholder="Viết thông điệp bạn muốn gửi đi nhé... (tối đa 100 từ)"
         className={`w-full bg-white rounded-lg px-4 py-3 text-primary-teal font-body focus:outline-none focus:ring-2 focus:ring-primary-teal mb-2 min-h-[120px] resize-none ${
           !validateWordLimit(message) ? 'ring-2 ring-red-500' : ''
         }`}
       />
       <p className={`text-sm mb-4 text-right ${
-        countWords(message) > 500 ? 'text-red-500' : 'text-primary-teal'
+        countWords(message) > 100 ? 'text-red-500' : 'text-primary-teal'
       }`}>
-        {countWords(message)}/500 từ
+        {countWords(message)}/100 từ
       </p>
 
       {/* Audio Recording Controls */}
