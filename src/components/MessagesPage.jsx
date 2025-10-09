@@ -169,14 +169,14 @@ function MessagesPage() {
       {/* Message Frame Container */}
       <div className="absolute right-1/2 translate-x-1/2 top-[371px] translate-y-[-50%] w-[307px] h-[253px]" data-node-id="0:1224">
         {/* Frame Background */}
-        <div className="w-full h-full bg-white rounded-lg border-2 border-gray-200 shadow-lg overflow-hidden">
+        <div className="w-full h-full bg-[#D9FFE8] rounded-lg border-2 border-gray-200 shadow-lg overflow-hidden">
           {/* Message Content */}
           <div className="w-full h-full p-4 flex flex-col justify-center">
             <div className="font-body font-bold leading-[normal] text-[#17b3c1] text-[14px] overflow-y-auto">
               {isLoading ? (
                 <p className="mb-0 text-center">Đang tải thông điệp...</p>
               ) : message ? (
-                <p className="mb-0 whitespace-pre-wrap text-justify">{message}</p>
+                <p className="mb-0 bg-[#D9FFE8]-pre-wrap text-justify">{message}</p>
               ) : (
                 <>
                   <p className="mb-0 text-justify">Gửi đến người nhận được chiếc thẻ này!</p>
