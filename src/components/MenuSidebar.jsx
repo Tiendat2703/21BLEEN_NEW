@@ -21,6 +21,7 @@ export default function MenuSidebar({ isOpen, onClose }) {
       <div
         className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
         onClick={onClose}
+        onTouchStart={onClose}
       />
 
       {/* Sidebar */}
