@@ -154,15 +154,14 @@ function MessagesPage() {
         
         {/* Menu Button */}
         <button 
-          onClick={handleMenuToggle}
-          className="text-primary-teal hover:opacity-70 transition-opacity p-2 relative z-30"
-          aria-label="Toggle menu"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="text-primary-teal hover:opacity-70 transition-opacity p-2"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-      </div>      
+      </div>    
       
       {/* Main Container */}
       <div className="absolute bg-[#d9ffe8] h-[732px] right-1/2 translate-x-1/2 rounded-tl-[196.5px] rounded-tr-[196.5px] top-[90px] w-[400px]" data-node-id="0:1223" />
