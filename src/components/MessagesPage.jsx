@@ -172,7 +172,7 @@ function MessagesPage() {
         <div className="w-full h-full bg-[#D9FFE8] rounded-lg overflow-hidden">
           {/* Message Content */}
           <div className="w-full h-full p-4 flex flex-col justify-center">
-            <div className="font-body font-bold leading-[normal] text-[#17b3c1] text-[14px] overflow-y-auto">
+            <div className="font-body font-bold leading-[normal] text-[#17b3c1] text-[14px] overflow-y-auto scrollbar-hide">
               {isLoading ? (
                 <p className="mb-0 text-center">Đang tải thông điệp...</p>
               ) : message ? (
