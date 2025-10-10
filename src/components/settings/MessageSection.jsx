@@ -15,7 +15,13 @@ function MessageSection() {
   const countWords = (text) => {
     if (!text || text.trim().length === 0) return 0;
     
-    // Cách đơn giản hơn: tách bằng khoảng trắng và lọc bỏ chuỗi rỗng
+    // Xử lý trường hợp text không có khoảng trắng (spam text)
+    if (!text.includes(' ') && text.length > 50) {
+      // Nếu text dài hơn 50 ký tự và không có khoảng trắng, coi như spam
+      return 1000; // Trả về số lớn để trigger validation
+    }
+    
+    // Tách bằng khoảng trắng và lọc bỏ chuỗi rỗng
     const words = text.trim().split(/\s+/).filter(word => word.length > 0);
     
     // Debug log để kiểm tra
@@ -29,6 +35,18 @@ function MessageSection() {
   // Function to validate word limit
   const validateWordLimit = (text) => {
     const wordCount = countWords(text);
+    
+    // Kiểm tra thêm: nếu text quá dài (hơn 1000 ký tự) thì reject
+    if (text.length > 1000) {
+      return false;
+    }
+    
+    // Kiểm tra spam pattern: nhiều ký tự lặp lại liên tiếp
+    const hasRepeatedChars = /(.)\1{10,}/.test(text);
+    if (hasRepeatedChars) {
+      return false;
+    }
+    
     return wordCount <= 100;
   };
   
@@ -284,7 +302,13 @@ function MessageSection() {
 
     // Validate word limit for message
     if (message && message.trim().length > 0 && !validateWordLimit(message)) {
-      setError('Thông điệp không được vượt quá 100 từ');
+      if (message.length > 1000) {
+        setError('Thông điệp quá dài (tối đa 1000 ký tự)');
+      } else if (/(.)\1{10,}/.test(message)) {
+        setError('Thông điệp chứa ký tự lặp lại quá nhiều');
+      } else {
+        setError('Thông điệp không được vượt quá 100 từ');
+      }
       return;
     }
 
@@ -414,7 +438,15 @@ function MessageSection() {
                 if (!validateWordLimit(newText) && !showWordLimitWarning && (now - lastWarningTime) > 2000) {
                   setShowWordLimitWarning(true);
                   setLastWarningTime(now);
-                  toast.warning('Thông điệp không được vượt quá 100 từ');
+                  
+                  // Thông báo cụ thể tùy theo loại lỗi
+                  if (newText.length > 1000) {
+                    toast.warning('Thông điệp quá dài (tối đa 1000 ký tự)');
+                  } else if (/(.)\1{10,}/.test(newText)) {
+                    toast.warning('Thông điệp chứa ký tự lặp lại quá nhiều');
+                  } else {
+                    toast.warning('Thông điệp không được vượt quá 100 từ');
+                  }
                 } else if (validateWordLimit(newText) && showWordLimitWarning) {
                   setShowWordLimitWarning(false);
                 }
