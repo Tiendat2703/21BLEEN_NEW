@@ -11,9 +11,19 @@ function MessageSection() {
   const { token } = useAuth();
   const [message, setMessage] = useState('');
   
-  // Function to count words
+  // Function to count words (hỗ trợ tiếng Việt)
   const countWords = (text) => {
-    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+    if (!text || text.trim().length === 0) return 0;
+    
+    // Cách đơn giản hơn: tách bằng khoảng trắng và lọc bỏ chuỗi rỗng
+    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+    
+    // Debug log để kiểm tra
+    console.log('Original text:', text);
+    console.log('Words array:', words);
+    console.log('Word count:', words.length);
+    
+    return words.length;
   };
   
   // Function to validate word limit
@@ -41,6 +51,15 @@ function MessageSection() {
     // Load existing data from backend
     loadPostFromBackend();
     loadVoiceFromBackend();
+    
+    // Test word counting function
+    console.log('=== TEST WORD COUNTING ===');
+    console.log('Test 1 - Empty:', countWords(''));
+    console.log('Test 2 - Simple:', countWords('xin chào bạn'));
+    console.log('Test 3 - Vietnamese:', countWords('Tôi yêu bạn rất nhiều'));
+    console.log('Test 4 - With punctuation:', countWords('Xin chào! Bạn có khỏe không?'));
+    console.log('Test 5 - Long text:', countWords('Đây là một câu dài để test việc đếm từ trong tiếng Việt với các dấu thanh điệu phức tạp'));
+    console.log('=======================');
   }, [userId, token]);
 
   // Auto-hide word limit warning after 3 seconds
