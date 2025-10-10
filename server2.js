@@ -1264,7 +1264,7 @@ app.post('/api/upload/voice', uploadLimiter, authenticateUser, async (req, res) 
       
       const allowedMimes = [
         'audio/mpeg',
-        'audio/mp3',
+        'audio/mp4',
         'audio/wav',
         'audio/ogg',
         'audio/webm',
