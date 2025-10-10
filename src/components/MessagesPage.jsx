@@ -237,21 +237,17 @@ function MessagesPage() {
       </div>
       
       {/* Person 2 Avatar - Right of Stop Icon */}
-      <div className="absolute right-1/2 translate-x-[150px] flex items-center justify-center size-[85px] top-[637px]">
-        <div className="flex-none rotate-[180deg] scale-y-[-100%]">
-          <div className="relative rounded-[14px] size-[85px]" data-node-id="0:1230">
-            <div aria-hidden="true" className="absolute inset-0 pointer-events-none rounded-[14px]">
-              <div className="absolute bg-[#58d0b5] inset-0 rounded-[14px]" />
-              <img 
-                alt={person2?.name || "Person 2"} 
-                className="absolute max-w-none object-cover rounded-[14px] size-full" 
-                src={person2?.image || defaultAvatar2}
-                onError={(e) => {
-                  e.target.src = defaultAvatar2;
-                }}
-              />  
-            </div>
-          </div>
+      <div className="absolute right-1/2 translate-x-[150px] rounded-[14px] size-[85px] top-[637px]" data-node-id="0:1230">
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none rounded-[14px]">
+          <div className="absolute bg-[#58d0b5] inset-0 rounded-[14px]" />
+          <img 
+            alt={person2?.name || "Person 2"} 
+            className="absolute max-w-none object-cover rounded-[14px] size-full" 
+            src={person2?.image || defaultAvatar2}
+            onError={(e) => {
+              e.target.src = defaultAvatar2;
+            }}
+          />  
         </div>
       </div>
       
