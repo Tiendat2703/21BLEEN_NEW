@@ -1265,25 +1265,41 @@ app.post('/api/upload/voice', uploadLimiter, authenticateUser, async (req, res) 
       const allowedMimes = [
         'audio/mpeg',
         'audio/mp4',
+        'video/mp4', // MP4 có thể là audio hoặc video
         'audio/wav',
         'audio/ogg',
         'audio/webm',
         'audio/aac',
         'audio/m4a',
         'audio/x-m4a',
+        'audio/mp4a-latm', // MIME type khác cho MP4 audio
         'application/octet-stream'
       ];
       
       // Kiểm tra extension
       const ext = file.originalname.toLowerCase().split('.').pop();
-      const allowedExts = ['mp3', 'wav', 'ogg', 'webm', 'aac', 'm4a', 'mpeg'];
+      const allowedExts = ['mp3', 'wav', 'ogg', 'webm', 'aac', 'm4a', 'mpeg', 'mp4'];
       
-      if (allowedMimes.includes(file.mimetype) && allowedExts.includes(ext)) {
+      // Kiểm tra MIME type hoặc extension
+      const isValidMime = allowedMimes.includes(file.mimetype);
+      const isValidExt = allowedExts.includes(ext);
+      
+      // Đặc biệt xử lý MP4 audio - có thể có MIME type khác nhau
+      const isMp4Audio = ext === 'mp4' && (
+        file.mimetype === 'audio/mp4' || 
+        file.mimetype === 'video/mp4' || 
+        file.mimetype === 'audio/mp4a-latm' ||
+        file.mimetype === 'application/octet-stream'
+      );
+      
+      if ((isValidMime && isValidExt) || isMp4Audio) {
         console.log('✅ Voice file accepted');
         cb(null, true);
       } else {
         console.log('❌ Voice file rejected');
-        cb(new Error(`File không hợp lệ. MIME: ${file.mimetype}, Ext: ${ext}`), false);
+        console.log('MIME type:', file.mimetype);
+        console.log('Extension:', ext);
+        cb(new Error(`File không hợp lệ. MIME: ${file.mimetype}, Ext: ${ext}. Chấp nhận: MP3, WAV, OGG, WEBM, AAC, M4A, MP4`), false);
       }
     }
   }).single('voice');
