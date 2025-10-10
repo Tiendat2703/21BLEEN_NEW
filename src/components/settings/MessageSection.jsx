@@ -29,6 +29,8 @@ function MessageSection() {
   const [success, setSuccess] = useState('');
   const [recordingTime, setRecordingTime] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [showWordLimitWarning, setShowWordLimitWarning] = useState(false);
+  const [lastWarningTime, setLastWarningTime] = useState(0);
   
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
@@ -40,6 +42,16 @@ function MessageSection() {
     loadPostFromBackend();
     loadVoiceFromBackend();
   }, [userId, token]);
+
+  // Auto-hide word limit warning after 3 seconds
+  useEffect(() => {
+    if (showWordLimitWarning) {
+      const timer = setTimeout(() => {
+        setShowWordLimitWarning(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showWordLimitWarning]);
 
   const loadPostFromBackend = async () => {
     if (!userId || !token) return;
@@ -376,10 +388,16 @@ function MessageSection() {
               value={message}
               onChange={(e) => {
                 const newText = e.target.value;
-                if (validateWordLimit(newText)) {
-                  setMessage(newText);
-                } else {
+                setMessage(newText);
+                
+                // Chỉ hiển thị warning một lần mỗi 2 giây để tránh spam
+                const now = Date.now();
+                if (!validateWordLimit(newText) && !showWordLimitWarning && (now - lastWarningTime) > 2000) {
+                  setShowWordLimitWarning(true);
+                  setLastWarningTime(now);
                   toast.warning('Thông điệp không được vượt quá 100 từ');
+                } else if (validateWordLimit(newText) && showWordLimitWarning) {
+                  setShowWordLimitWarning(false);
                 }
               }}
               placeholder="Viết thông điệp bạn muốn gửi đi nhé... (tối đa 100 từ)"
