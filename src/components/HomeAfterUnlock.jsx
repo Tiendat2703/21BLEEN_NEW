@@ -63,7 +63,6 @@ export default function HomeAfterUnlock() {
         console.error('Token hết hạn hoặc không có quyền truy cập');
         toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
         setTimeout(() => {
-          localStorage.clear();
           window.location.href = `/${userId}/unlock`;
         }, 2000);
       } else {

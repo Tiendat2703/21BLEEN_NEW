@@ -5,20 +5,14 @@ export const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, userId } = useAuth();
   const { userId: paramUserId } = useParams();
 
-  if (!isAuthenticated || userId !== paramUserId) {
-    return <Navigate to={`/${paramUserId || ''}`} replace />;
-  }
-
-  return children;
+  // Always redirect to unlock page instead of checking authentication
+  return <Navigate to={`/${paramUserId || ''}/unlock`} replace />;
 };
 
 export const PublicRoute = ({ children }) => {
   const { isAuthenticated, userId } = useAuth();
   const { userId: paramUserId } = useParams();
 
-  if (isAuthenticated && userId === paramUserId) {
-    return <Navigate to={`/${userId}/home`} replace />;
-  }
-
+  // Always show the children (UnlockPage) regardless of authentication status
   return children;
 };

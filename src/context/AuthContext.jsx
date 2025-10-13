@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -7,32 +7,19 @@ export const AuthProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    // Check if user is authenticated from localStorage on mount
-    const storedToken = localStorage.getItem('accessToken');
-    const storedUserId = localStorage.getItem('userId');
-    
-    if (storedToken && storedUserId) {
-      setToken(storedToken);
-      setUserId(storedUserId);
-      setIsAuthenticated(true);
-    }
-  }, []);
-
+  // Temporary login without storing in localStorage
   const login = (userIdParam, accessToken) => {
     setUserId(userIdParam);
     setToken(accessToken);
     setIsAuthenticated(true);
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('userId', userIdParam);
+    // Note: No localStorage storage - session is temporary
   };
 
   const logout = () => {
     setUserId(null);
     setToken(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('userId');
+    // No need to remove from localStorage since we don't store there
   };
 
   return (
