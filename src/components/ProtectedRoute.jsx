@@ -5,14 +5,24 @@ export const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, userId } = useAuth();
   const { userId: paramUserId } = useParams();
 
-  // Always redirect to unlock page instead of checking authentication
-  return <Navigate to={`/${paramUserId || ''}/unlock`} replace />;
+  // Always redirect to unlock page if not authenticated
+  // Since we don't persist authentication, users must always enter passcode
+  if (!isAuthenticated || userId !== paramUserId) {
+    return <Navigate to={`/${paramUserId || ''}`} replace />;
+  }
+
+  return children;
 };
 
 export const PublicRoute = ({ children }) => {
   const { isAuthenticated, userId } = useAuth();
   const { userId: paramUserId } = useParams();
 
-  // Always show the children (UnlockPage) regardless of authentication status
+  // Since we don't persist authentication, users will always see the unlock page
+  // Only redirect if currently authenticated in memory (after successful passcode entry)
+  if (isAuthenticated && userId === paramUserId) {
+    return <Navigate to={`/${userId}/home`} replace />;
+  }
+
   return children;
 };

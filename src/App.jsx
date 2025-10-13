@@ -66,8 +66,8 @@ const AppRoutes = () => {
         </PublicRoute>
       } />
       
-      {/* Default userId route - show HomePage with fingerprint */}
-      <Route path="/:userId" element={<HomePage />} />
+      {/* Default userId route - always show UnlockPage */}
+      <Route path="/:userId" element={<UnlockPage />} />
       
       {/* Protected routes */}
       <Route path="/:userId/home" element={

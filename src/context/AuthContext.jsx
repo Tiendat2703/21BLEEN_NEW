@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -7,19 +7,26 @@ export const AuthProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
 
-  // Temporary login without storing in localStorage
+  useEffect(() => {
+    // No persistent authentication - always start as unauthenticated
+    // This ensures users always need to enter passcode
+    setIsAuthenticated(false);
+    setUserId(null);
+    setToken(null);
+  }, []);
+
   const login = (userIdParam, accessToken) => {
     setUserId(userIdParam);
     setToken(accessToken);
     setIsAuthenticated(true);
-    // Note: No localStorage storage - session is temporary
+    // No localStorage storage - session only exists in memory
   };
 
   const logout = () => {
     setUserId(null);
     setToken(null);
     setIsAuthenticated(false);
-    // No need to remove from localStorage since we don't store there
+    // No localStorage cleanup needed since we don't store there
   };
 
   return (

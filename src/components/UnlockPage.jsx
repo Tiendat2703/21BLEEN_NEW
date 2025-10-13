@@ -52,11 +52,10 @@ function UnlockPage() {
       }
       
       if (data.success) {
-        // Set temporary authentication without storing in localStorage
+        // Save token in memory (no localStorage) and redirect on success
         login(userId, data.data.accessToken);
         toast.success('Xác thực thành công!');
-        // Stay on unlock page instead of redirecting to home
-        navigate(`/${userId}/unlock`);
+        navigate(`/${userId}/home`);
       } else {
         const attemptsLeft = MAX_RETRIES - retryCount - 1;
         const errorMessage = attemptsLeft > 0 

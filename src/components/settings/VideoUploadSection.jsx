@@ -166,6 +166,7 @@ function VideoUploadSection() {
         setError('Phiên đăng nhập đã hết hạn');
         // Auto logout after 2 seconds
         setTimeout(() => {
+          localStorage.clear();
           window.location.href = `/${userId}/unlock`;
         }, 2000);
         return;
